@@ -1,0 +1,127 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal {
+    background: var(--bg-card);
+    border-radius: 24px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-glow);
+    transform: scale(1);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.hidden .modal {
+    transform: scale(0.9);
+}
+
+.modal-header {
+    padding: 2rem 2rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-header p {
+    color: var(--text-secondary);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.guide-step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border-left: 4px solid;
+    border-image: var(--accent-gradient) 1;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.step-content p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.modal-footer {
+    padding: 1rem 2rem 2rem;
+    text-align: center;
+}
+
+.btn-start {
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-glow);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-start .emoji-icon {
+    font-size: 1.2rem;
+}
+
+.btn-start:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 40px rgba(139, 92, 246, 0.4);
+}

@@ -1,0 +1,33 @@
+{
+  "name": "ResFotoProms - Generador de Prompts para Restauración de Fotos",
+  "short_name": "ResFotoProms",
+  "description": "Generador de prompts profesionales para restauración de fotos antiguas con IA. Compatible con Flux, Midjourney, GFPGAN, Topaz y más.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f1a",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "img/logo.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "img/logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ],
+  "categories": ["productivity", "photo", "utilities"],
+  "screenshots": [
+    {
+      "src": "img/logo.jpeg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ]
+}

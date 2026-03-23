@@ -1,0 +1,21 @@
+{
+  "name": "ResFotoProms",
+  "version": "1.0.0",
+  "description": "Generador de prompts para restauración de fotos",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "npm run minify:css && npm run minify:js",
+    "minify:css": "npx clean-css-cli css/*.css -o dist/css/main.min.css",
+    "minify:js": "npx terser js/main.js -o dist/js/main.min.js -c -m"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "terser": "^5.31.0",
+    "serve": "^14.2.3"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11"
+  ]
+}

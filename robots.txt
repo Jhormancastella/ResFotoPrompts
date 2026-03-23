@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://resfotoproms.com/sitemap.xml
+
+# Bloquear recursos innecesarios
+Disallow: /.git/
+Disallow: /.qodo/
+Disallow: /package.json
