@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResFotoProms - Generador de Prompts para Restauración de Fotos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --bg-card-hover: #222230;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
+            --accent-gradient-hover: linear-gradient(135deg, #a78bfa 0%, #22d3ee 50%, #34d399 100%);
+            --border-color: #2a2a3a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.3);
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.2);
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-5%, 5%) rotate(5deg); }
+            50% { transform: translate(5%, -5%) rotate(-5deg); }
+            75% { transform: translate(-3%, -3%) rotate(3deg); }
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: var(--accent-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        /* Guide Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 24px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-glow);
+            transform: scale(1);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.hidden .modal {
+            transform: scale(0.9);
+        }
+
+        .modal-header {
+            padding: 2rem 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-header p {
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .guide-step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border-left: 4px solid;
+            border-image: var(--accent-gradient) 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 2rem 2rem;
+            text-align: center;
+        }
+
+        .btn-start {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Sections */
+        .section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-card);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .section-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .option-item:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .option-item.selected {
+            border-color: var(--accent-primary);
+            background: rgba(139, 92, 246, 0.15);
+        }
+
+        .option-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .option-item.selected .option-checkbox {
+            background: var(--accent-gradient);
+            border-color: transparent;
+        }
+
+        .option-checkbox i {
+            color: white;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .option-item.selected .option-checkbox i {
+            opacity: 1;
+        }
+
+        .option-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Radio Options */
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .radio-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .radio-item:hover {
+            border-color: var(--accent-secondary);
+        }
+
+        .radio-item.selected {
+            border-color: var(--accent-secondary);
+            background: rgba(6, 182, 212, 0.15);
+        }
+
+        .radio-item .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .radio-item .label {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Toggle Options */
+        .toggle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .toggle-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-item:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .toggle-item.active {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .toggle-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toggle-info i {
+            font-size: 1.2rem;
+            color: var(--accent-primary);
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: var(--border-color);
+            border-radius: 13px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-item.active .toggle-switch {
+            background: var(--success);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-item.active .toggle-switch::after {
+            left: 27px;
+        }
+
+        /* AI Recommendations */
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .ai-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .ai-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .ai-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .ai-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .ai-logo.flux { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .ai-logo.midjourney { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+        .ai-logo.stable { background: linear-gradient(135deg, #ff6b6b, #feca57); }
+        .ai-logo.gfpgan { background: linear-gradient(135deg, #00b894, #00cec9); }
+        .ai-logo.codeformer { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+        .ai-logo.topaz { background: linear-gradient(135deg, #fd79a8, #e84393); }
+        .ai-logo.remini { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+        .ai-logo.realESRGAN { background: linear-gradient(135deg, #55a3ff, #003d82); }
+
+        .ai-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .ai-badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        .ai-badge.free { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .ai-badge.pro { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+
+        .ai-description {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .ai-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .ai-tag {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            background: var(--bg-card);
+            border-radius: 6px;
+            color: var(--text-secondary);
+        }
+
+        /* Quality Slider */
+        .quality-section {
+            padding: 1rem 0;
+        }
+
+        .quality-slider-container {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .quality-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .quality-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+            flex: 1;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .quality-label.active {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .quality-label:hover:not(.active) {
+            background: var(--bg-card-hover);
+        }
+
+        /* Generate Button */
+        .generate-section {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .btn-generate {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 1.25rem 4rem;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glow);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 50px rgba(139, 92, 246, 0.5);
+        }
+
+        .btn-generate:active {
+            transform: translateY(-2px) scale(1);
+        }
+
+        .btn-generate i {
+            font-size: 1.4rem;
+        }
+
+        /* Output Section */
+        .output-section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 2px solid var(--accent-primary);
+            display: none;
+        }
+
+        .output-section.visible {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .output-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .output-title i {
+            color: var(--success);
+        }
+
+        .output-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .output-tab {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .output-tab.active {
+            background: var(--accent-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .prompt-output {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            min-height: 150px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-action.copied {
+            background: var(--success);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .logo-text {
+                font-size: 1.2rem;
+            }
+
+            .header-controls {
+                gap: 0.5rem;
+            }
+
+            .control-btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .control-btn span {
+                display: none;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .options-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .btn-generate {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+
+            .modal {
+                margin: 0.5rem;
+                border-radius: 16px;
+            }
+
+            .modal-header, .modal-body, .modal-footer {
+                padding: 1rem 1.25rem;
+            }
+
+            .output-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+
+    <!-- Guide Modal -->
+    <div class="modal-overlay" id="guideModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🚀 <span data-i18n="guideTitle">Guía Rápida de Uso</span></h2>
+                <p data-i18n="guideSubtitle">Aprende a crear prompts perfectos en 4 pasos</p>
+            </div>
+            <div class="modal-body">
+                <div class="guide-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4 data-i18n="step1Title">Selecciona los daños de tu foto</h4>
+                        <p data-i18n="step1Desc">Marca todos los tipos de deterioro que tiene tu imagen: manchas, roturas, decoloración, etc.</p>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4 data-i18n="step2Title">Define las características</h4>
+                        <p data-i18n="step2Desc">Indica la época, tipo de foto, material original y calidad deseada para mayor precisión.</p>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4 data-i18n="step3Title">Activa las opciones avanzadas</h4>
+                        <p data-i18n="step3Desc">Colorización, recuperación de detalles, extensión de bordes y más funciones premium.</p>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4 data-i18n="step4Title">Genera y copia tu prompt</h4>
+                        <p data-i18n="step4Desc">Elige entre versiones corta, media o extensa según la IA que vayas a utilizar.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-start" onclick="closeGuide()">
+                    <i class="fas fa-rocket"></i> <span data-i18n="startBtn">¡Comenzar Ahora!</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-camera-retro"></i>
+                </div>
+                <span class="logo-text">ResFotoProms</span>
+            </div>
+            <div class="header-controls">
+                <button class="control-btn" id="guideBtn" onclick="openGuide()">
+                    <i class="fas fa-question-circle"></i>
+                    <span data-i18n="guideBtn">Guía</span>
+                </button>
+                <button class="control-btn" id="langBtn" onclick="toggleLanguage()">
+                    <i class="fas fa-globe"></i>
+                    <span id="langText">EN</span>
+                </button>
+                <button class="control-btn" id="themeBtn" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                    <span data-i18n="themeBtn">Tema</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="hero">
+            <h1 data-i18n="heroTitle">✨ Generador de Prompts para Restauración de Fotos</h1>
+            <p data-i18n="heroDesc">Crea prompts profesionales optimizados para restauración.</p>
+        </div>
+
+        <!-- Damage Type Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <h3 class="section-title" data-i18n="damageTitle">Tipo de Daño</h3>
+                    <p class="section-subtitle" data-i18n="damageSubtitle">Selecciona todos los daños presentes en tu foto</p>
+                </div>
+            </div>
+            <div class="options-grid" id="damageOptions">
+                <!-- Damage options will be inserted by JS -->
+            </div>
+        </section>
+
+        <!-- Photo Era Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <h3 class="section-title" data-i18n="eraTitle">Época de la Foto</h3>
+                    <p class="section-subtitle" data-i18n="eraSubtitle">¿De qué década es aproximadamente?</p>
+                </div>
+            </div>
+            <div class="radio-grid" id="eraOptions">
+                <!-- Era options will be inserted by JS -->
+            </div>
+        </section>
+
+        <!-- Photo Type Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div>
+                    <h3 class="section-title" data-i18n="typeTitle">Tipo de Fotografía</h3>
+                    <p class="section-subtitle" data-i18n="typeSubtitle">¿Qué tipo de foto es?</p>
+                </div>
+            </div>
+            <div class="radio-grid" id="typeOptions">
+                <!-- Type options will be inserted by JS -->
+            </div>
+        </section>
+
+        <!-- Material Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div>
+                    <h3 class="section-title" data-i18n="materialTitle">Material Original</h3>
+                    <p class="section-subtitle" data-i18n="materialSubtitle">¿Qué tipo de papel o material es?</p>
+                </div>
+            </div>
+            <div class="radio-grid" id="materialOptions">
+                <!-- Material options will be inserted by JS -->
+            </div>
+        </section>
+
+        <!-- Quality Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div>
+                    <h3 class="section-title" data-i18n="qualityTitle">Calidad Deseada</h3>
+                    <p class="section-subtitle" data-i18n="qualitySubtitle">¿Qué nivel de restauración necesitas?</p>
+                </div>
+            </div>
+            <div class="quality-section">
+                <div class="quality-slider-container">
+                    <div class="quality-labels" id="qualityOptions">
+                        <!-- Quality options will be inserted by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advanced Options Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <div>
+                    <h3 class="section-title" data-i18n="advancedTitle">Opciones Avanzadas</h3>
+                    <p class="section-subtitle" data-i18n="advancedSubtitle">Funciones extra para mejores resultados</p>
+                </div>
+            </div>
+            <div class="toggle-grid" id="advancedOptions">
+                <!-- Advanced options will be inserted by JS -->
+            </div>
+        </section>
+
+        <!-- Output Style Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div>
+                    <h3 class="section-title" data-i18n="outputTitle">Estilo de Salida</h3>
+                    <p class="section-subtitle" data-i18n="outputSubtitle">¿Para qué IA quieres optimizar el prompt?</p>
+                </div>
+            </div>
+            <div class="radio-grid" id="outputOptions">
+                <!-- Output options will be inserted by JS -->
+            </div>
+        </section>
+
+        <!-- Generate Button -->
+        <div class="generate-section">
+            <button class="btn-generate" onclick="generatePrompt()">
+                <i class="fas fa-magic"></i>
+                <span data-i18n="generateBtn">Generar Prompt Mágico</span>
+            </button>
+        </div>
+
+        <!-- Output Section -->
+        <section class="output-section" id="outputSection">
+            <div class="output-header">
+                <h3 class="output-title">
+                    <i class="fas fa-check-circle"></i>
+                    <span data-i18n="outputResultTitle">Tu Prompt Generado</span>
+                </h3>
+                <div class="output-tabs">
+                    <button class="output-tab active" data-type="short" onclick="switchPromptType('short')" data-i18n="tabShort">Corto</button>
+                    <button class="output-tab" data-type="medium" onclick="switchPromptType('medium')" data-i18n="tabMedium">Medio</button>
+                    <button class="output-tab" data-type="long" onclick="switchPromptType('long')" data-i18n="tabLong">Extenso</button>
+                </div>
+            </div>
+            <div class="prompt-output" id="promptOutput"></div>
+            <div class="output-actions">
+                <button class="btn-action" onclick="copyPrompt()">
+                    <i class="fas fa-copy"></i>
+                    <span data-i18n="copyBtn">Copiar Prompt</span>
+                </button>
+                <button class="btn-action" onclick="downloadPrompt()">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadBtn">Descargar TXT</span>
+                </button>
+                <button class="btn-action" onclick="resetAll()">
+                    <i class="fas fa-redo"></i>
+                    <span data-i18n="resetBtn">Reiniciar</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- AI Recommendations Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h3 class="section-title" data-i18n="aiTitle">IAs Recomendadas para Restauración</h3>
+                    <p class="section-subtitle" data-i18n="aiSubtitle">Las mejores herramientas de IA para restaurar tus fotos</p>
+                </div>
+            </div>
+            <div class="ai-grid" id="aiRecommendations">
+                <!-- AI cards will be inserted by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 <strong>ResFotoProms</strong> - <span data-i18n="footerText">El generador de prompts definitivo para restauración de fotos</span></p>
+        <p data-i18n="footerCredit">Creado con ❤️ para preservar tus recuerdos</p>
+    </footer>
+
+    <script>
+        // ==================== DATA ====================
+        const data = {
+            damages: [
+                { id: 'faded', icon: '🌫️', es: 'Descolorida / Desvanecida', en: 'Faded / Discolored' },
+                { id: 'yellowed', icon: '🟡', es: 'Amarilleada', en: 'Yellowed' },
+                { id: 'sepia', icon: '🟤', es: 'Virada a sepia', en: 'Sepia toned' },
+                { id: 'torn', icon: '📄', es: 'Roturas / Rasgaduras', en: 'Torn / Ripped' },
+                { id: 'missing', icon: '🕳️', es: 'Partes faltantes', en: 'Missing parts' },
+                { id: 'peeling', icon: '🎨', es: 'Descascarada', en: 'Peeling / Flaking' },
+                { id: 'water', icon: '💧', es: 'Manchas de agua', en: 'Water stains' },
+                { id: 'mold', icon: '🦠', es: 'Moho / Hongos', en: 'Mold / Fungus' },
+                { id: 'ink', icon: '🖊️', es: 'Manchas de tinta', en: 'Ink stains' },
+                { id: 'scratches', icon: '⚡', es: 'Rayones profundos', en: 'Deep scratches' },
+                { id: 'dust', icon: '🌫️', es: 'Polvo y suciedad', en: 'Dust and dirt' },
+                { id: 'overexposed', icon: '☀️', es: 'Sobreexpuesta', en: 'Overexposed' },
+                { id: 'folds', icon: '📐', es: 'Pliegues y dobleces', en: 'Folds and creases' },
+                { id: 'tape', icon: '📎', es: 'Cinta adhesiva vieja', en: 'Old adhesive tape' },
+                { id: 'foxing', icon: '🟠', es: 'Manchas de óxido (foxing)', en: 'Foxing spots' },
+                { id: 'cracks', icon: '💔', es: 'Grietas en emulsión', en: 'Emulsion cracks' }
+            ],
+            eras: [
+                { id: 'pre1900', icon: '🏛️', es: 'Antes de 1900', en: 'Before 1900' },
+                { id: '1900-1930', icon: '🎩', es: '1900 - 1930', en: '1900 - 1930' },
+                { id: '1930-1955', icon: '📻', es: '1930 - 1955', en: '1930 - 1955' },
+                { id: '1955-1975', icon: '📺', es: '1955 - 1975', en: '1955 - 1975' },
+                { id: '1975-1995', icon: '📼', es: '1975 - 1995', en: '1975 - 1995' },
+                { id: '1995-2010', icon: '📷', es: '1995 - 2010', en: '1995 - 2010' }
+            ],
+            types: [
+                { id: 'family', icon: '👨‍👩‍👧‍👦', es: 'Retrato familiar', en: 'Family portrait' },
+                { id: 'studio', icon: '🎭', es: 'Retrato de estudio', en: 'Studio portrait' },
+                { id: 'wedding', icon: '💒', es: 'Foto de boda', en: 'Wedding photo' },
+                { id: 'group', icon: '👥', es: 'Foto de grupo', en: 'Group photo' },
+                { id: 'landscape', icon: '🏞️', es: 'Paisaje / Viaje', en: 'Landscape / Travel' },
+                { id: 'id', icon: '🪪', es: 'Foto de identificación', en: 'ID photo' },
+                { id: 'polaroid', icon: '📸', es: 'Polaroid', en: 'Polaroid' },
+                { id: 'slide', icon: '🎞️', es: 'Diapositiva', en: 'Slide' }
+            ],
+            materials: [
+                { id: 'matte', icon: '📝', es: 'Papel mate', en: 'Matte paper' },
+                { id: 'glossy', icon: '✨', es: 'Papel brillante', en: 'Glossy paper' },
+                { id: 'textured', icon: '🧱', es: 'Papel con textura', en: 'Textured paper' },
+                { id: 'albumin', icon: '🥚', es: 'Albúmina / Plata gelatina', en: 'Albumen / Silver gelatin' },
+                { id: 'tintype', icon: '🔩', es: 'Ferrotype (tintype)', en: 'Tintype' },
+                { id: 'cardboard', icon: '📦', es: 'Cartón fotográfico', en: 'Photo cardboard' }
+            ],
+            qualities: [
+                { id: 'conservative', es: 'Conservadora (Museo)', en: 'Conservative (Museum)' },
+                { id: 'natural', es: 'Natural (Realista)', en: 'Natural (Realistic)' },
+                { id: 'cinematic', es: 'Cinematográfica', en: 'Cinematic' },
+                { id: 'ultra', es: 'Ultra HD (8K-16K)', en: 'Ultra HD (8K-16K)' }
+            ],
+            advanced: [
+                { id: 'colorize', icon: 'fa-palette', es: 'Colorización ultra-realista', en: 'Ultra-realistic colorization' },
+                { id: 'grain', icon: 'fa-film', es: 'Añadir grano analógico sutil', en: 'Add subtle analog grain' },
+                { id: 'details', icon: 'fa-tshirt', es: 'Recuperar detalles de ropa/tejidos', en: 'Recover clothing/fabric details' },
+                { id: 'eyes', icon: 'fa-eye', es: 'Corregir ojos cerrados/borrosos', en: 'Fix closed/blurry eyes' },
+                { id: 'remove', icon: 'fa-user-minus', es: 'Quitar elementos del fondo', en: 'Remove background elements' },
+                { id: 'outpaint', icon: 'fa-expand', es: 'Extender bordes (outpainting)', en: 'Extend borders (outpainting)' },
+                { id: 'enhance', icon: 'fa-magic', es: 'Mejorar nitidez facial', en: 'Enhance facial sharpness' },
+                { id: 'denoise', icon: 'fa-broom', es: 'Reducción de ruido avanzada', en: 'Advanced noise reduction' }
+            ],
+            outputs: [
+                { id: 'flux', icon: '⚡', es: 'Optimizado para Flux', en: 'Optimized for Flux' },
+                { id: 'midjourney', icon: '🎨', es: 'Optimizado para Midjourney v6', en: 'Optimized for Midjourney v6' },
+                { id: 'sdxl', icon: '🖼️', es: 'Optimizado para SDXL / SD3', en: 'Optimized for SDXL / SD3' },
+                { id: 'technical', icon: '🔧', es: 'Técnico (GFPGAN, Topaz)', en: 'Technical (GFPGAN, Topaz)' }
+            ],
+            ais: [
+                {
+                    id: 'flux',
+                    name: 'Flux.1',
+                    badge: 'pro',
+                    badgeText: { es: 'Premium', en: 'Premium' },
+                    logo: 'flux',
+                    desc: { 
+                        es: 'La IA más avanzada de 2024 para generación de imágenes. Excelente para restauración con prompts detallados.',
+                        en: 'The most advanced AI of 2024 for image generation. Excellent for restoration with detailed prompts.'
+                    },
+                    tags: ['Photorealistic', 'High Detail', 'Fast']
+                },
+                {
+                    id: 'midjourney',
+                    name: 'Midjourney v6',
+                    badge: 'pro',
+                    badgeText: { es: 'Premium', en: 'Premium' },
+                    logo: 'midjourney',
+                    desc: {
+                        es: 'Líder en calidad artística y realismo. Ideal para restauraciones con estilo cinematográfico.',
+                        en: 'Leader in artistic quality and realism. Ideal for cinematic style restorations.'
+                    },
+                    tags: ['Artistic', 'Cinematic', 'Premium']
+                },
+                {
+                    id: 'gfpgan',
+                    name: 'GFPGAN',
+                    badge: 'free',
+                    badgeText: { es: 'Gratis', en: 'Free' },
+                    logo: 'gfpgan',
+                    desc: {
+                        es: 'Especializado en restauración de rostros. Open source y muy efectivo para fotos de retrato.',
+                        en: 'Specialized in face restoration. Open source and very effective for portrait photos.'
+                    },
+                    tags: ['Face Restore', 'Open Source', 'Free']
+                },
+                {
+                    id: 'codeformer',
+                    name: 'CodeFormer',
+                    badge: 'free',
+                    badgeText: { es: 'Gratis', en: 'Free' },
+                    logo: 'codeformer',
+                    desc: {
+                        es: 'Restauración de rostros con preservación de identidad. Mejor balance entre calidad y fidelidad.',
+                        en: 'Face restoration with identity preservation. Best balance between quality and fidelity.'
+                    },
+                    tags: ['Identity Preserve', 'Faces', 'Free']
+                },
+                {
+                    id: 'topaz',
+                    name: 'Topaz Photo AI',
+                    badge: 'pro',
+                    badgeText: { es: 'Premium', en: 'Premium' },
+                    logo: 'topaz',
+                    desc: {
+                        es: 'Suite profesional todo-en-uno: upscaling, eliminación de ruido, enfoque y restauración.',
+                        en: 'Professional all-in-one suite: upscaling, noise removal, sharpening and restoration.'
+                    },
+                    tags: ['Professional', 'All-in-One', 'Desktop']
+                },
+                {
+                    id: 'remini',
+                    name: 'Remini',
+                    badge: 'free',
+                    badgeText: { es: 'Freemium', en: 'Freemium' },
+                    logo: 'remini',
+                    desc: {
+                        es: 'App móvil popular para mejora de fotos. Muy fácil de usar y resultados rápidos.',
+                        en: 'Popular mobile app for photo enhancement. Very easy to use with quick results.'
+                    },
+                    tags: ['Mobile', 'Easy', 'Quick']
+                },
+                {
+                    id: 'realesrgan',
+                    name: 'Real-ESRGAN',
+                    badge: 'free',
+                    badgeText: { es: 'Gratis', en: 'Free' },
+                    logo: 'realESRGAN',
+                    desc: {
+                        es: 'El mejor upscaler open source. Aumenta resolución x4 manteniendo detalles naturales.',
+                        en: 'The best open source upscaler. Increases resolution x4 while maintaining natural details.'
+                    },
+                    tags: ['Upscaling', 'Open Source', '4x']
+                },
+                {
+                    id: 'sdxl',
+                    name: 'Stable Diffusion XL',
+                    badge: 'free',
+                    badgeText: { es: 'Gratis', en: 'Free' },
+                    logo: 'stable',
+                    desc: {
+                        es: 'Modelo open source muy potente. Puedes ejecutarlo localmente o usar versiones online.',
+                        en: 'Very powerful open source model. You can run it locally or use online versions.'
+                    },
+                    tags: ['Open Source', 'Local', 'Flexible']
+                }
+            ]
+        };
+
+        // ==================== TRANSLATIONS ====================
+        const translations = {
+            es: {
+                guideTitle: 'Guía Rápida de Uso',
+                guideSubtitle: 'Aprende a crear prompts perfectos en 4 pasos',
+                step1Title: 'Selecciona los daños de tu foto',
+                step1Desc: 'Marca todos los tipos de deterioro que tiene tu imagen: manchas, roturas, decoloración, etc.',
+                step2Title: 'Define las características',
+                step2Desc: 'Indica la época, tipo de foto, material original y calidad deseada para mayor precisión.',
+                step3Title: 'Activa las opciones avanzadas',
+                step3Desc: 'Colorización, recuperación de detalles, extensión de bordes y más funciones premium.',
+                step4Title: 'Genera y copia tu prompt',
+                step4Desc: 'Elige entre versiones corta, media o extensa según la IA que vayas a utilizar.',
+                startBtn: '¡Comenzar Ahora!',
+                guideBtn: 'Guía',
+                themeBtn: 'Tema',
+                heroTitle: '✨ Generador de Prompts para Restauración de Fotos',
+                heroDesc: 'Crea prompts profesionales optimizados para las mejores IAs de restauración. Selecciona los daños, características y genera el prompt perfecto.',
+                damageTitle: 'Tipo de Daño',
+                damageSubtitle: 'Selecciona todos los daños presentes en tu foto',
+                eraTitle: 'Época de la Foto',
+                eraSubtitle: '¿De qué década es aproximadamente?',
+                typeTitle: 'Tipo de Fotografía',
+                typeSubtitle: '¿Qué tipo de foto es?',
+                materialTitle: 'Material Original',
+                materialSubtitle: '¿Qué tipo de papel o material es?',
+                qualityTitle: 'Calidad Deseada',
+                qualitySubtitle: '¿Qué nivel de restauración necesitas?',
+                advancedTitle: 'Opciones Avanzadas',
+                advancedSubtitle: 'Funciones extra para mejores resultados',
+                outputTitle: 'Estilo de Salida',
+                outputSubtitle: '¿Para qué IA quieres optimizar el prompt?',
+                generateBtn: 'Generar Prompt Mágico',
+                outputResultTitle: 'Tu Prompt Generado',
+                tabShort: 'Corto',
+                tabMedium: 'Medio',
+                tabLong: 'Extenso',
+                copyBtn: 'Copiar Prompt',
+                downloadBtn: 'Descargar TXT',
+                resetBtn: 'Reiniciar',
+                aiTitle: 'IAs Recomendadas para Restauración',
+                aiSubtitle: 'Las mejores herramientas de IA para restaurar tus fotos',
+                footerText: 'El generador de prompts definitivo para restauración de fotos',
+                footerCredit: 'Creado con ❤️ para preservar tus recuerdos',
+                copied: '¡Copiado!',
+                selectDamage: 'Por favor, selecciona al menos un tipo de daño.'
+            },
+            en: {
+                guideTitle: 'Quick Start Guide',
+                guideSubtitle: 'Learn to create perfect prompts in 4 steps',
+                step1Title: 'Select photo damages',
+                step1Desc: 'Mark all types of deterioration in your image: stains, tears, discoloration, etc.',
+                step2Title: 'Define characteristics',
+                step2Desc: 'Indicate the era, type of photo, original material and desired quality for more precision.',
+                step3Title: 'Enable advanced options',
+                step3Desc: 'Colorization, detail recovery, border extension and more premium features.',
+                step4Title: 'Generate and copy your prompt',
+                step4Desc: 'Choose between short, medium or long versions depending on the AI you will use.',
+                startBtn: 'Start Now!',
+                guideBtn: 'Guide',
+                themeBtn: 'Theme',
+                heroTitle: '✨ Photo Restoration Prompt Generator',
+                heroDesc: 'Create professional prompts optimized for the best restoration AIs. Select damages, characteristics and generate the perfect prompt.',
+                damageTitle: 'Damage Type',
+                damageSubtitle: 'Select all damages present in your photo',
+                eraTitle: 'Photo Era',
+                eraSubtitle: 'Approximately which decade?',
+                typeTitle: 'Photo Type',
+                typeSubtitle: 'What type of photo is it?',
+                materialTitle: 'Original Material',
+                materialSubtitle: 'What type of paper or material?',
+                qualityTitle: 'Desired Quality',
+                qualitySubtitle: 'What restoration level do you need?',
+                advancedTitle: 'Advanced Options',
+                advancedSubtitle: 'Extra features for better results',
+                outputTitle: 'Output Style',
+                outputSubtitle: 'Which AI do you want to optimize the prompt for?',
+                generateBtn: 'Generate Magic Prompt',
+                outputResultTitle: 'Your Generated Prompt',
+                tabShort: 'Short',
+                tabMedium: 'Medium',
+                tabLong: 'Extended',
+                copyBtn: 'Copy Prompt',
+                downloadBtn: 'Download TXT',
+                resetBtn: 'Reset',
+                aiTitle: 'Recommended AIs for Restoration',
+                aiSubtitle: 'The best AI tools to restore your photos',
+                footerText: 'The ultimate prompt generator for photo restoration',
+                footerCredit: 'Created with ❤️ to preserve your memories',
+                copied: 'Copied!',
+                selectDamage: 'Please select at least one type of damage.'
+            }
+        };
+
+        // ==================== STATE ====================
+        let currentLang = 'es';
+        let currentTheme = 'dark';
+        let selectedDamages = [];
+        let selectedEra = null;
+        let selectedType = null;
+        let selectedMaterial = null;
+        let selectedQuality = 'natural';
+        let selectedAdvanced = [];
+        let selectedOutput = 'flux';
+        let currentPromptType = 'short';
+        let generatedPrompts = { short: '', medium: '', long: '' };
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAllOptions();
+            applyTranslations();
+            
+            // Check if guide was shown before
+            if (!localStorage.getItem('guideShown')) {
+                document.getElementById('guideModal').classList.remove('hidden');
+            } else {
+                document.getElementById('guideModal').classList.add('hidden');
+            }
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                toggleTheme();
+            }
+        });
+
+        // ==================== RENDER FUNCTIONS ====================
+        function renderAllOptions() {
+            renderDamageOptions();
+            renderEraOptions();
+            renderTypeOptions();
+            renderMaterialOptions();
+            renderQualityOptions();
+            renderAdvancedOptions();
+            renderOutputOptions();
+            renderAIRecommendations();
+        }
+
+        function renderDamageOptions() {
+            const container = document.getElementById('damageOptions');
+            container.innerHTML = data.damages.map(d => `
+                <div class="option-item" data-id="${d.id}" onclick="toggleDamage('${d.id}')">
+                    <div class="option-checkbox"><i class="fas fa-check"></i></div>
+                    <span class="option-label">${d.icon} ${d[currentLang]}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderEraOptions() {
+            const container = document.getElementById('eraOptions');
+            container.innerHTML = data.eras.map(e => `
+                <div class="radio-item ${selectedEra === e.id ? 'selected' : ''}" data-id="${e.id}" onclick="selectEra('${e.id}')">
+                    <div class="icon">${e.icon}</div>
+                    <div class="label">${e[currentLang]}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderTypeOptions() {
+            const container = document.getElementById('typeOptions');
+            container.innerHTML = data.types.map(t => `
+                <div class="radio-item ${selectedType === t.id ? 'selected' : ''}" data-id="${t.id}" onclick="selectType('${t.id}')">
+                    <div class="icon">${t.icon}</div>
+                    <div class="label">${t[currentLang]}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderMaterialOptions() {
+            const container = document.getElementById('materialOptions');
+            container.innerHTML = data.materials.map(m => `
+                <div class="radio-item ${selectedMaterial === m.id ? 'selected' : ''}" data-id="${m.id}" onclick="selectMaterial('${m.id}')">
+                    <div class="icon">${m.icon}</div>
+                    <div class="label">${m[currentLang]}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderQualityOptions() {
+            const container = document.getElementById('qualityOptions');
+            container.innerHTML = data.qualities.map(q => `
+                <div class="quality-label ${selectedQuality === q.id ? 'active' : ''}" data-id="${q.id}" onclick="selectQuality('${q.id}')">
+                    ${q[currentLang]}
+                </div>
+            `).join('');
+        }
+
+        function renderAdvancedOptions() {
+            const container = document.getElementById('advancedOptions');
+            container.innerHTML = data.advanced.map(a => `
+                <div class="toggle-item ${selectedAdvanced.includes(a.id) ? 'active' : ''}" data-id="${a.id}" onclick="toggleAdvanced('${a.id}')">
+                    <div class="toggle-info">
+                        <i class="fas ${a.icon}"></i>
+                        <span>${a[currentLang]}</span>
+                    </div>
+                    <div class="toggle-switch"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderOutputOptions() {
+            const container = document.getElementById('outputOptions');
+            container.innerHTML = data.outputs.map(o => `
+                <div class="radio-item ${selectedOutput === o.id ? 'selected' : ''}" data-id="${o.id}" onclick="selectOutput('${o.id}')">
+                    <div class="icon">${o.icon}</div>
+                    <div class="label">${o[currentLang]}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderAIRecommendations() {
+            const container = document.getElementById('aiRecommendations');
+            container.innerHTML = data.ais.map(ai => `
+                <div class="ai-card">
+                    <div class="ai-card-header">
+                        <div class="ai-logo ${ai.logo}">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="ai-info">
+                            <h4>${ai.name}</h4>
+                            <span class="ai-badge ${ai.badge}">${ai.badgeText[currentLang]}</span>
+                        </div>
+                    </div>
+                    <p class="ai-description">${ai.desc[currentLang]}</p>
+                    <div class="ai-tags">
+                        ${ai.tags.map(tag => `<span class="ai-tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== SELECTION HANDLERS ====================
+        function toggleDamage(id) {
+            const index = selectedDamages.indexOf(id);
+            if (index > -1) {
+                selectedDamages.splice(index, 1);
+            } else {
+                selectedDamages.push(id);
+            }
+            document.querySelector(`[data-id="${id}"].option-item`).classList.toggle('selected');
+        }
+
+        function selectEra(id) {
+            selectedEra = id;
+            document.querySelectorAll('#eraOptions .radio-item').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`#eraOptions [data-id="${id}"]`).classList.add('selected');
+        }
+
+        function selectType(id) {
+            selectedType = id;
+            document.querySelectorAll('#typeOptions .radio-item').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`#typeOptions [data-id="${id}"]`).classList.add('selected');
+        }
+
+        function selectMaterial(id) {
+            selectedMaterial = id;
+            document.querySelectorAll('#materialOptions .radio-item').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`#materialOptions [data-id="${id}"]`).classList.add('selected');
+        }
+
+        function selectQuality(id) {
+            selectedQuality = id;
+            document.querySelectorAll('.quality-label').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.quality-label[data-id="${id}"]`).classList.add('active');
+        }
+
+        function toggleAdvanced(id) {
+            const index = selectedAdvanced.indexOf(id);
+            if (index > -1) {
+                selectedAdvanced.splice(index, 1);
+            } else {
+                selectedAdvanced.push(id);
+            }
+            document.querySelector(`[data-id="${id}"].toggle-item`).classList.toggle('active');
+        }
+
+        function selectOutput(id) {
+            selectedOutput = id;
+            document.querySelectorAll('#outputOptions .radio-item').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`#outputOptions [data-id="${id}"]`).classList.add('selected');
+        }
+
+        // ==================== PROMPT GENERATION ====================
+        function generatePrompt() {
+            if (selectedDamages.length === 0) {
+                alert(translations[currentLang].selectDamage);
+                return;
+            }
+
+            const damages = selectedDamages.map(id => data.damages.find(d => d.id === id).en).join(', ');
+            const era = selectedEra ? data.eras.find(e => e.id === selectedEra).en : 'vintage';
+            const type = selectedType ? data.types.find(t => t.id === selectedType).en : 'photograph';
+            const material = selectedMaterial ? data.materials.find(m => m.id === selectedMaterial).en : 'photo paper';
+            const quality = data.qualities.find(q => q.id === selectedQuality).en;
+            const advanced = selectedAdvanced.map(id => data.advanced.find(a => a.id === id).en).join(', ');
+
+            // Generate different prompt lengths
+            generatedPrompts.short = generateShortPrompt(damages, era, type, quality);
+            generatedPrompts.medium = generateMediumPrompt(damages, era, type, material, quality, advanced);
+            generatedPrompts.long = generateLongPrompt(damages, era, type, material, quality, advanced);
+
+            // Apply output style modifications
+            applyOutputStyle();
+
+            // Show output section
+            document.getElementById('outputSection').classList.add('visible');
+            document.getElementById('promptOutput').textContent = generatedPrompts[currentPromptType];
+
+            // Scroll to output
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function generateShortPrompt(damages, era, type, quality) {
+            return `Restore this ${era} ${type} with ${damages}. ${quality} restoration, preserve original details, fix all damages, enhance clarity while maintaining authenticity.`;
+        }
+
+        function generateMediumPrompt(damages, era, type, material, quality, advanced) {
+            let prompt = `Professional photo restoration of a ${era} ${type} printed on ${material}. `;
+            prompt += `The image has the following damages that need to be fixed: ${damages}. `;
+            prompt += `Apply ${quality} restoration techniques. `;
+            prompt += `Carefully repair all damaged areas while preserving the original character and authenticity of the photograph. `;
+            prompt += `Enhance sharpness, correct exposure issues, and restore proper contrast. `;
+            if (advanced) {
+                prompt += `Additional requirements: ${advanced}. `;
+            }
+            prompt += `Final result should look naturally restored without artificial appearance.`;
+            return prompt;
+        }
+
+        function generateLongPrompt(damages, era, type, material, quality, advanced) {
+            let prompt = `COMPREHENSIVE PHOTO RESTORATION TASK:\n\n`;
+            prompt += `[SOURCE MATERIAL]\n`;
+            prompt += `- Era: ${era}\n`;
+            prompt += `- Type: ${type}\n`;
+            prompt += `- Material: ${material}\n\n`;
+            prompt += `[IDENTIFIED DAMAGES]\n`;
+            prompt += `${damages.split(', ').map(d => `- ${d}`).join('\n')}\n\n`;
+            prompt += `[RESTORATION REQUIREMENTS]\n`;
+            prompt += `- Quality Level: ${quality}\n`;
+            prompt += `- Preserve original composition and framing\n`;
+            prompt += `- Maintain authentic period-appropriate aesthetics\n`;
+            prompt += `- Repair all physical damages (tears, scratches, missing parts)\n`;
+            prompt += `- Correct color degradation and fading\n`;
+            prompt += `- Remove stains, spots, and discoloration\n`;
+            prompt += `- Enhance facial features while preserving likeness\n`;
+            prompt += `- Restore proper contrast and tonal range\n`;
+            prompt += `- Fix any exposure issues\n`;
+            prompt += `- Remove dust, dirt, and scanning artifacts\n\n`;
+            if (advanced) {
+                prompt += `[ADVANCED OPTIONS]\n`;
+                prompt += `${advanced.split(', ').map(a => `- ${a}`).join('\n')}\n\n`;
+            }
+            prompt += `[OUTPUT SPECIFICATIONS]\n`;
+            prompt += `- High resolution output (minimum 4K)\n`;
+            prompt += `- Natural appearance without over-processing\n`;
+            prompt += `- Subtle film grain retention for authenticity\n`;
+            prompt += `- Museum-quality restoration standards\n`;
+            prompt += `- Ready for archival printing`;
+            return prompt;
+        }
+
+        function applyOutputStyle() {
+            switch (selectedOutput) {
+                case 'midjourney':
+                    generatedPrompts.short += ' --style raw --v 6';
+                    generatedPrompts.medium += ' --style raw --v 6 --q 2';
+                    generatedPrompts.long += '\n\n[MIDJOURNEY PARAMETERS]\n--style raw --v 6 --q 2 --ar 4:5';
+                    break;
+                case 'flux':
+                    // Flux works best with natural language
+                    break;
+                case 'sdxl':
+                    generatedPrompts.short = generatedPrompts.short.replace(/\./g, ',') + ' highly detailed, 8k uhd, photorealistic';
+                    generatedPrompts.medium = generatedPrompts.medium.replace(/\./g, ',') + ' masterpiece, best quality, highly detailed, 8k resolution, photorealistic restoration';
+                    break;
+                case 'technical':
+                    generatedPrompts.long += '\n\n[RECOMMENDED PIPELINE]\n1. GFPGAN/CodeFormer for face restoration\n2. Real-ESRGAN for upscaling\n3. LAMA for inpainting missing parts\n4. Manual touch-ups in Photoshop';
+                    break;
+            }
+        }
+
+        function switchPromptType(type) {
+            currentPromptType = type;
+            document.querySelectorAll('.output-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            document.getElementById('promptOutput').textContent = generatedPrompts[type];
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function copyPrompt() {
+            const prompt = generatedPrompts[currentPromptType];
+            navigator.clipboard.writeText(prompt).then(() => {
+                const btn = document.querySelector('.btn-action');
+                btn.classList.add('copied');
+                btn.innerHTML = `<i class="fas fa-check"></i><span>${translations[currentLang].copied}</span>`;
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = `<i class="fas fa-copy"></i><span>${translations[currentLang].copyBtn}</span>`;
+                }, 2000);
+            });
+        }
+
+        function downloadPrompt() {
+            const prompt = generatedPrompts[currentPromptType];
+            const blob = new Blob([prompt], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ResFotoProms_prompt.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function resetAll() {
+            selectedDamages = [];
+            selectedEra = null;
+            selectedType = null;
+            selectedMaterial = null;
+            selectedQuality = 'natural';
+            selectedAdvanced = [];
+            selectedOutput = 'flux';
+            generatedPrompts = { short: '', medium: '', long: '' };
+
+            document.querySelectorAll('.option-item, .radio-item, .toggle-item').forEach(el => el.classList.remove('selected', 'active'));
+            document.querySelectorAll('.quality-label').forEach(el => el.classList.remove('active'));
+            document.querySelector('.quality-label[data-id="natural"]').classList.add('active');
+            document.querySelector('#outputOptions [data-id="flux"]').classList.add('selected');
+            document.getElementById('outputSection').classList.remove('visible');
+        }
+
+        // ==================== THEME & LANGUAGE ====================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                currentTheme = 'light';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                currentTheme = 'dark';
+            }
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            document.getElementById('langText').textContent = currentLang === 'es' ? 'EN' : 'ES';
+            document.documentElement.lang = currentLang;
+            applyTranslations();
+            renderAllOptions();
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+        }
+
+        // ==================== GUIDE MODAL ====================
+        function openGuide() {
+            document.getElementById('guideModal').classList.remove('hidden');
+        }
+
+        function closeGuide() {
+            document.getElementById('guideModal').classList.add('hidden');
+            localStorage.setItem('guideShown', 'true');
+        }
+    </script>
+</body>
+</html>
