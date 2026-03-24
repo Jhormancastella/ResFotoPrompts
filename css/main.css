@@ -44,8 +44,11 @@ body {
     background: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
+    min-height: 100dvh;
     transition: all 0.3s ease;
     overflow-x: hidden;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
 }
 
 ::selection {
