@@ -5,7 +5,7 @@
    ============================================= */
 
 /* =============================================
-   BASE RESPONSIVE - Tablets and below (768px)
+   BASE RESPONSIVE - Large tablets and below (768px)
    ============================================= */
 @media (max-width: 768px) {
     /* Header responsive */
@@ -53,6 +53,15 @@
         display: none;
     }
 
+    /* Ensure icons are always visible */
+    .control-btn .emoji-icon,
+    .control-btn i {
+        display: inline-block !important;
+        font-size: 1.15rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
     /* Main content */
     main {
         padding: 1rem;
@@ -98,7 +107,6 @@
     /* Options grid - tablet */
     .options-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 0.6rem;
     }
 
     .option-item {
@@ -114,37 +122,22 @@
         font-size: 0.8rem;
     }
 
-    .option-label .emoji-icon {
-        font-size: 1.1rem;
-    }
-
     /* Radio grid - tablet */
     .radio-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 0.6rem;
     }
 
     .radio-item {
         padding: 0.75rem;
     }
 
-    .radio-item .icon .emoji-icon {
-        font-size: 1.5rem;
-    }
-
-    .radio-item .label {
-        font-size: 0.8rem;
-    }
-
     /* AI Cards - tablet */
     .ai-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 0.75rem;
     }
 
     .ai-card {
         padding: 1rem;
-        border-radius: 12px;
     }
 
     .ai-card-header {
@@ -153,51 +146,14 @@
         gap: 0.5rem;
     }
 
-    .ai-logo {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-    }
-
-    .ai-info h4 {
-        font-size: 1rem;
-    }
-
-    .ai-description {
-        font-size: 0.8rem;
-    }
-
-    .ai-tags {
-        gap: 0.4rem;
-    }
-
-    .ai-tag {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.5rem;
-    }
-
     /* Buttons */
     .btn-generate {
         padding: 0.85rem 1.75rem;
         font-size: 0.95rem;
-        border-radius: 12px;
         width: 100%;
     }
 
-    .btn-start {
-        padding: 0.85rem 2rem;
-        font-size: 1rem;
-        width: 100%;
-    }
-
-    .btn-action {
-        padding: 0.6rem 1rem;
-        font-size: 0.8rem;
-        flex: 1;
-        justify-content: center;
-    }
-
-    /* Modal - tablet */
+    /* Modal */
     .modal {
         margin: 0.5rem;
         border-radius: 16px;
@@ -210,60 +166,15 @@
         padding: 1rem;
     }
 
-    .modal-header h2 {
-        font-size: 1.4rem;
-    }
-
-    .guide-step {
-        flex-direction: column;
-        gap: 0.75rem;
-        padding: 0.75rem;
-    }
-
-    .step-number {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
-    }
-
-    .step-content h4 {
-        font-size: 0.95rem;
-    }
-
-    .step-content p {
-        font-size: 0.85rem;
-    }
-
-    /* Output section */
-    .output-section {
-        padding: 1rem;
-        border-radius: 16px;
-    }
-
+    /* Output */
     .output-header {
         flex-direction: column;
         gap: 0.75rem;
-        align-items: flex-start;
-    }
-
-    .output-title {
-        font-size: 1.1rem;
     }
 
     .output-tabs {
         width: 100%;
         overflow-x: auto;
-    }
-
-    .prompt-output {
-        padding: 1rem;
-        font-size: 0.85rem;
-        border-radius: 10px;
-    }
-
-    .output-actions {
-        flex-direction: column;
-        gap: 0.5rem;
     }
 
     /* Toggle grid */
@@ -273,12 +184,12 @@
 }
 
 /* =============================================
-   SMALL MOBILE DEVICES (480px - 512px)
+   MEDIUM DEVICES - 640px
+   Small tablets / large phones landscape
    ============================================= */
-@media (max-width: 512px) and (min-width: 481px) {
-    /* Header */
+@media (max-width: 640px) {
     header {
-        padding: 0.65rem 0.85rem;
+        padding: 0.7rem 0.9rem;
     }
 
     .logo-text {
@@ -292,28 +203,36 @@
 
     .control-btn {
         padding: 0.5rem 0.6rem;
+        font-size: 0.72rem;
     }
 
-    /* Main */
+    /* Ensure icons visible */
+    .control-btn .emoji-icon,
+    .control-btn i {
+        font-size: 1.1rem !important;
+    }
+
     main {
-        padding: 0.85rem;
-    }
-
-    /* Hero */
-    .hero h1 {
-        font-size: 1.45rem;
-    }
-
-    .hero p {
-        font-size: 0.88rem;
-    }
-
-    /* Sections */
-    .section {
         padding: 0.9rem;
     }
 
-    /* Options - 2 columns for 512px */
+    .hero h1 {
+        font-size: 1.6rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+    }
+
+    .section {
+        padding: 0.9rem;
+        border-radius: 14px;
+    }
+
+    .section-title {
+        font-size: 1.05rem;
+    }
+
     .options-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -322,24 +241,34 @@
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* AI Cards - 2 columns */
     .ai-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* Modal */
-    .modal {
-        margin: 0.4rem;
+    .ai-card {
+        padding: 0.9rem;
+    }
+
+    .ai-info h4 {
+        font-size: 0.95rem;
+    }
+
+    .ai-description {
+        font-size: 0.78rem;
+    }
+
+    .modal-header h2 {
+        font-size: 1.3rem;
     }
 }
 
 /* =============================================
-   SMALL MOBILE DEVICES (480px)
+   MEDIUM SMALL DEVICES - 540px
+   Large phones
    ============================================= */
-@media (max-width: 480px) {
-    /* Header minimal */
+@media (max-width: 540px) {
     header {
-        padding: 0.6rem 0.75rem;
+        padding: 0.65rem 0.8rem;
     }
 
     .logo-text {
@@ -359,102 +288,112 @@
         font-size: 0.95rem;
     }
 
-    /* Main padding */
-    main {
-        padding: 0.75rem;
+    /* Ensure icons visible on small screens */
+    .control-btn .emoji-icon,
+    .control-btn i {
+        display: inline-block !important;
+        font-size: 1rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 
-    /* Hero smaller */
+    main {
+        padding: 0.8rem;
+    }
+
+    .hero {
+        margin-bottom: 1.5rem;
+    }
+
     .hero h1 {
-        font-size: 1.4rem;
+        font-size: 1.45rem;
     }
 
     .hero p {
         font-size: 0.85rem;
     }
 
-    /* Sections */
     .section {
-        padding: 0.85rem;
-        border-radius: 14px;
+        padding: 0.8rem;
+    }
+
+    .section-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 1.1rem;
     }
 
     .section-title {
         font-size: 1rem;
     }
 
-    .section-subtitle {
-        font-size: 0.8rem;
-    }
-
-    /* Options - single column */
     .options-grid {
         grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .option-item {
+        padding: 0.65rem;
     }
 
     .radio-grid {
         grid-template-columns: 1fr;
+        gap: 0.5rem;
     }
 
-    /* AI Cards */
+    .radio-item {
+        padding: 0.65rem;
+    }
+
     .ai-grid {
         grid-template-columns: 1fr;
     }
 
-    /* Modal */
+    .ai-card {
+        padding: 0.8rem;
+    }
+
+    .ai-logo {
+        width: 36px;
+        height: 36px;
+    }
+
+    .btn-generate {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
     .modal {
-        margin: 0.25rem;
-        border-radius: 12px;
+        margin: 0.35rem;
     }
 
     .modal-header h2 {
         font-size: 1.2rem;
     }
 
-    .btn-start {
-        padding: 0.75rem 1.5rem;
-    }
-
-    /* Output */
-    .output-tabs {
-        flex-wrap: nowrap;
-    }
-
-    .output-tab {
-        padding: 0.4rem 0.75rem;
-        font-size: 0.8rem;
-        white-space: nowrap;
+    .prompt-output {
+        padding: 0.9rem;
+        font-size: 0.82rem;
     }
 }
 
 /* =============================================
-   EXTRA SMALL DEVICES - 320px width support
-   Very small phones, older devices
+   SMALL MOBILE DEVICES - 440px
+   Standard phones
    ============================================= */
-@media (max-width: 360px) {
-    /* Reset and base */
-    * {
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-    }
-
-    /* Header compact */
+@media (max-width: 440px) {
     header {
-        padding: 0.5rem 0.6rem;
-    }
-
-    .logo {
-        gap: 0.4rem;
-    }
-
-    .logo-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 1rem;
+        padding: 0.6rem 0.75rem;
     }
 
     .logo-text {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    .logo-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
     }
 
     .header-controls {
@@ -462,56 +401,55 @@
     }
 
     .control-btn {
-        padding: 0.4rem 0.5rem;
+        padding: 0.42rem 0.52rem;
         font-size: 0.7rem;
     }
 
-    .control-btn .emoji-icon {
-        font-size: 0.85rem;
+    /* Ensure icons visible on very small screens */
+    .control-btn .emoji-icon,
+    .control-btn i {
+        display: inline-block !important;
+        font-size: 0.95rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 
-    /* Main content */
     main {
-        padding: 0.5rem;
-    }
-
-    /* Hero */
-    .hero {
-        margin-bottom: 1.5rem;
+        padding: 0.75rem;
     }
 
     .hero h1 {
-        font-size: 1.2rem;
+        font-size: 1.35rem;
     }
 
     .hero p {
-        font-size: 0.8rem;
+        font-size: 0.82rem;
     }
 
-    /* Sections */
     .section {
         padding: 0.75rem;
         border-radius: 12px;
         margin-bottom: 0.75rem;
     }
 
+    .section-header {
+        flex-direction: row;
+        align-items: center;
+    }
+
     .section-icon {
         width: 32px;
         height: 32px;
         font-size: 1rem;
+        flex-shrink: 0;
     }
 
     .section-title {
-        font-size: 0.95rem;
+        font-size: 0.98rem;
     }
 
     .section-subtitle {
-        font-size: 0.75rem;
-    }
-
-    /* Options - minimal */
-    .options-grid {
-        gap: 0.5rem;
+        font-size: 0.78rem;
     }
 
     .option-item {
@@ -525,16 +463,7 @@
     }
 
     .option-label {
-        font-size: 0.75rem;
-    }
-
-    .option-label .emoji-icon {
-        font-size: 1rem;
-    }
-
-    /* Radio items */
-    .radio-grid {
-        gap: 0.5rem;
+        font-size: 0.78rem;
     }
 
     .radio-item {
@@ -542,20 +471,16 @@
     }
 
     .radio-item .icon .emoji-icon {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
     .radio-item .label {
-        font-size: 0.75rem;
-    }
-
-    /* AI Cards */
-    .ai-grid {
-        gap: 0.5rem;
+        font-size: 0.78rem;
     }
 
     .ai-card {
         padding: 0.75rem;
+        border-radius: 12px;
     }
 
     .ai-logo {
@@ -578,6 +503,7 @@
 
     .ai-description {
         font-size: 0.75rem;
+        margin-bottom: 0.75rem;
     }
 
     .ai-tag {
@@ -585,14 +511,13 @@
         padding: 0.15rem 0.4rem;
     }
 
-    /* Buttons */
     .btn-generate {
         padding: 0.75rem 1.25rem;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
     }
 
     .btn-start {
-        padding: 0.7rem 1.25rem;
+        padding: 0.75rem 1.5rem;
         font-size: 0.9rem;
     }
 
@@ -601,16 +526,15 @@
         font-size: 0.75rem;
     }
 
-    /* Modal */
     .modal {
-        margin: 0.2rem;
-        border-radius: 10px;
+        margin: 0.25rem;
+        border-radius: 12px;
     }
 
     .modal-header,
     .modal-body,
     .modal-footer {
-        padding: 0.75rem;
+        padding: 0.85rem;
     }
 
     .modal-header h2 {
@@ -618,7 +542,9 @@
     }
 
     .guide-step {
-        padding: 0.6rem;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding: 0.65rem;
     }
 
     .step-number {
@@ -628,26 +554,335 @@
     }
 
     .step-content h4 {
-        font-size: 0.85rem;
+        font-size: 0.88rem;
     }
 
     .step-content p {
-        font-size: 0.75rem;
+        font-size: 0.78rem;
     }
 
-    /* Output */
     .output-section {
         padding: 0.75rem;
+        border-radius: 14px;
     }
 
     .output-title {
         font-size: 1rem;
     }
 
+    .output-tab {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.78rem;
+    }
+
     .prompt-output {
-        padding: 0.75rem;
+        padding: 0.8rem;
         font-size: 0.8rem;
+        min-height: 120px;
+    }
+}
+
+/* =============================================
+   EXTRA SMALL DEVICES - 360px
+   Small phones / older devices
+   ============================================= */
+@media (max-width: 360px) {
+    header {
+        padding: 0.55rem 0.65rem;
+    }
+
+    .logo {
+        gap: 0.4rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.95rem;
+    }
+
+    .logo-text {
+        font-size: 0.9rem;
+    }
+
+    .control-btn {
+        padding: 0.4rem 0.48rem;
+        font-size: 0.68rem;
+    }
+
+    .control-btn .emoji-icon {
+        font-size: 0.88rem;
+    }
+
+    /* Ensure icons visible on tiny screens */
+    .control-btn .emoji-icon,
+    .control-btn i {
+        display: inline-block !important;
+        font-size: 0.85rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    main {
+        padding: 0.6rem;
+    }
+
+    .hero {
+        margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+        font-size: 1.2rem;
+    }
+
+    .hero p {
+        font-size: 0.78rem;
+    }
+
+    .section {
+        padding: 0.65rem;
+        border-radius: 10px;
+        margin-bottom: 0.65rem;
+    }
+
+    .section-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+
+    .section-title {
+        font-size: 0.92rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.72rem;
+    }
+
+    .option-item {
+        padding: 0.55rem;
+    }
+
+    .option-checkbox {
+        width: 15px;
+        height: 15px;
+    }
+
+    .option-label {
+        font-size: 0.74rem;
+    }
+
+    .option-label .emoji-icon {
+        font-size: 1rem;
+    }
+
+    .radio-item {
+        padding: 0.55rem;
+    }
+
+    .radio-item .icon .emoji-icon {
+        font-size: 1.15rem;
+    }
+
+    .radio-item .label {
+        font-size: 0.74rem;
+    }
+
+    .ai-grid {
+        gap: 0.5rem;
+    }
+
+    .ai-card {
+        padding: 0.65rem;
+    }
+
+    .ai-logo {
+        width: 28px;
+        height: 28px;
+    }
+
+    .ai-logo .emoji-icon {
+        font-size: 1rem;
+    }
+
+    .ai-info h4 {
+        font-size: 0.85rem;
+    }
+
+    .ai-badge {
+        font-size: 0.6rem;
+        padding: 0.12rem 0.35rem;
+    }
+
+    .ai-description {
+        font-size: 0.72rem;
+    }
+
+    .ai-tag {
+        font-size: 0.6rem;
+        padding: 0.12rem 0.35rem;
+    }
+
+    .btn-generate {
+        padding: 0.7rem 1.1rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-start {
+        padding: 0.68rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-action {
+        padding: 0.48rem 0.68rem;
+        font-size: 0.72rem;
+    }
+
+    .modal {
+        margin: 0.2rem;
+        border-radius: 10px;
+        max-height: 88vh;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 0.7rem;
+    }
+
+    .modal-header h2 {
+        font-size: 1rem;
+    }
+
+    .guide-step {
+        padding: 0.55rem;
+    }
+
+    .step-number {
+        width: 26px;
+        height: 26px;
+        font-size: 0.75rem;
+    }
+
+    .step-content h4 {
+        font-size: 0.82rem;
+    }
+
+    .step-content p {
+        font-size: 0.72rem;
+    }
+
+    .output-section {
+        padding: 0.65rem;
+    }
+
+    .output-title {
+        font-size: 0.95rem;
+    }
+
+    .prompt-output {
+        padding: 0.7rem;
+        font-size: 0.78rem;
         min-height: 100px;
+    }
+}
+
+/* =============================================
+   MINIMUM WIDTH - 320px
+   Very small phones / older devices
+   ============================================= */
+@media (max-width: 320px) {
+    * {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    header {
+        padding: 0.5rem 0.55rem;
+    }
+
+    .logo-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+    }
+
+    .logo-text {
+        font-size: 0.82rem;
+    }
+
+    .control-btn {
+        padding: 0.35rem 0.42rem;
+    }
+
+    .control-btn .emoji-icon {
+        font-size: 0.8rem;
+    }
+
+    /* Ensure icons visible on minimum width */
+    .control-btn .emoji-icon,
+    .control-btn i {
+        display: inline-block !important;
+        font-size: 0.75rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .hero h1 {
+        font-size: 1.08rem;
+    }
+
+    .hero p {
+        font-size: 0.72rem;
+    }
+
+    .section {
+        padding: 0.55rem;
+    }
+
+    .section-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+
+    .section-title {
+        font-size: 0.85rem;
+    }
+
+    .option-item,
+    .radio-item {
+        padding: 0.48rem;
+    }
+
+    .ai-card {
+        padding: 0.55rem;
+    }
+
+    .ai-logo {
+        width: 24px;
+        height: 24px;
+    }
+
+    .ai-info h4 {
+        font-size: 0.8rem;
+    }
+
+    .btn-generate {
+        padding: 0.65rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .modal-header h2 {
+        font-size: 0.95rem;
+    }
+
+    .prompt-output {
+        font-size: 0.74rem;
     }
 }
 
@@ -657,14 +892,12 @@
    ============================================= */
 @media (-webkit-min-device-pixel-ratio: 2),
        (min-resolution: 192dpi) {
-    /* Improve text rendering */
     body {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
     }
 
-    /* Sharper borders for retina */
     .section,
     .ai-card,
     .option-item,
@@ -673,19 +906,11 @@
         border-width: 1px;
     }
 
-    /* Clearer icons */
     .logo-icon,
     .ai-logo,
     .section-icon {
         -webkit-transform: translateZ(0);
         transform: translateZ(0);
-    }
-
-    /* Sharper shadows */
-    .modal,
-    .ai-card,
-    .section {
-        box-shadow: var(--shadow-card);
     }
 }
 
@@ -694,12 +919,10 @@
    ============================================= */
 @media (-webkit-min-device-pixel-ratio: 3),
        (min-resolution: 288dpi) {
-    /* Even finer text */
     body {
         -webkit-font-smoothing: subpixel-antialiased;
     }
 
-    /* Smaller elements for density */
     .control-btn {
         padding: 0.45rem 0.65rem;
     }
@@ -719,7 +942,6 @@
    Better use of horizontal space
    ============================================= */
 @media (max-width: 768px) and (orientation: landscape) {
-    /* Header stays compact */
     .logo-text {
         font-size: 1rem;
     }
@@ -728,42 +950,32 @@
         display: none;
     }
 
-    /* More horizontal layouts */
     main {
-        padding: 0.75rem;
+        padding: 0.65rem;
     }
 
     .hero h1 {
-        font-size: 1.4rem;
+        font-size: 1.35rem;
     }
 
     .hero {
-        margin-bottom: 1rem;
+        margin-bottom: 0.85rem;
     }
 
-    /* Side by side options in landscape */
-    .options-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .radio-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
+    .options-grid,
+    .radio-grid,
     .ai-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* Modal more compact */
     .modal {
-        max-height: 85vh;
+        max-height: 82vh;
     }
 
     .modal-body {
-        padding: 0.75rem;
+        padding: 0.7rem;
     }
 
-    /* Guide steps horizontal */
     .guide-step {
         flex-direction: row;
         align-items: flex-start;
@@ -775,17 +987,17 @@
    ============================================= */
 @media (max-width: 400px) and (orientation: landscape) {
     .hero h1 {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
     }
 
     .options-grid,
     .radio-grid,
     .ai-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     }
 
     main {
-        padding: 0.5rem;
+        padding: 0.45rem;
     }
 }
 
@@ -812,8 +1024,6 @@
    Ensures proper colors in dark mode
    ============================================= */
 @media (prefers-color-scheme: dark) {
-    /* Already handled by CSS variables, 
-       but ensuring fallbacks */
     body {
         color-scheme: dark;
     }
@@ -824,3 +1034,38 @@
         color-scheme: light;
     }
 }
+
+/* =============================================
+   PREFERENCE: REDUCED MOTION
+   For users who prefer reduced animations
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* =============================================
+   DARK MODE PREFERENCE
+   Ensures proper colors in dark mode
+   ============================================= */
+@media (prefers-color-scheme: dark) {
+    body {
+        color-scheme: dark;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        color-scheme: light;
+    }
+}
+
